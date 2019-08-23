@@ -1,4 +1,4 @@
-module id3golang
+module github.com/dencat/id3golang
 
 go 1.12
 
