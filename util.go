@@ -3,7 +3,6 @@ package id3golang
 import (
 	"bytes"
 	"errors"
-	"github.com/djimenez/iconv-go"
 	"unicode/utf16"
 	"unicode/utf8"
 )
@@ -13,16 +12,6 @@ const (
 	encodingUTF16   string = "UTF-16"
 	encodingUTF16BE string = "UTF-16BE"
 )
-
-var converters = map[string]*iconv.Converter{
-	encodingUTF16:   getConverter(encodingUTF16),
-	encodingUTF16BE: getConverter(encodingUTF16BE),
-}
-
-func getConverter(from string) *iconv.Converter {
-	conv, _ := iconv.NewConverter(from, encodingUTF8)
-	return conv
-}
 
 /*
 *	Text Encoding for text frame header
@@ -60,11 +49,13 @@ func decodeString(b []byte, encoding string) (string, error) {
 		}
 		return value, nil
 	case encodingUTF16BE:
-		return converters[encoding].ConvertString(string(b))
+		return DecodeUTF16BE(b)
 	}
+
 	return "", errors.New("unknown encoding format")
 }
 
+// Decode UTF-16 Little Endian to UTF-8
 func DecodeUTF16(b []byte) (string, error) {
 	if len(b)%2 != 0 {
 		return "", errors.New("Must have even length byte slice")
@@ -79,6 +70,29 @@ func DecodeUTF16(b []byte) (string, error) {
 	lb := len(b)
 	for i := 0; i < lb; i += 2 {
 		u16s[0] = uint16(b[i]) + (uint16(b[i+1]) << 8)
+		r := utf16.Decode(u16s)
+		n := utf8.EncodeRune(b8buf, r[0])
+		ret.Write(b8buf[:n])
+	}
+
+	return ret.String(), nil
+}
+
+// Decode UTF-16 Big Endian To UTF-8
+func DecodeUTF16BE(b []byte) (string, error) {
+	if len(b)%2 != 0 {
+		return "", errors.New("Must have even length byte slice")
+	}
+
+	u16s := make([]uint16, 1)
+
+	ret := &bytes.Buffer{}
+
+	b8buf := make([]byte, 4)
+
+	lb := len(b)
+	for i := 0; i < lb; i += 2 {
+		u16s[0] = uint16(b[i+1]) + (uint16(b[i]) << 8)
 		r := utf16.Decode(u16s)
 		n := utf8.EncodeRune(b8buf, r[0])
 		ret.Write(b8buf[:n])

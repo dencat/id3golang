@@ -30,8 +30,28 @@ func (id3 *ID3) GetYear() (int, bool) {
 	return year.Year(), true
 }
 
-func (id3 *ID3) GetComment() (string, bool) {
-	return id3.getString(tagComment)
+type Comment struct {
+	Language string
+	Text     string
+}
+
+func (id3 *ID3) GetComment() (*Comment, bool) {
+	commentStr, ok := id3.getString(tagComment)
+	if !ok {
+		return nil, false
+	}
+	// Comment struct must be greater than 7
+	// [lang \x00 text] - comment format
+	// lang - 3 symbols
+	// \x00 - const, delimeter
+	// text - all after
+	if len(commentStr) < 8 {
+		return nil, false
+	}
+	return &Comment{
+		Language: commentStr[0:3],
+		Text:     commentStr[7:],
+	}, true
 }
 
 func (id3 *ID3) GetGenre() (string, bool) {

@@ -32,7 +32,7 @@ func TestId3v24(t *testing.T) {
 
 	comment, ok := id3.GetComment()
 	asrt.Equal(true, ok)
-	asrt.Equal("eng\x00catcomment", comment)
+	asrt.Equal("catcomment", comment.Text)
 
 	genre, ok := id3.GetGenre()
 	asrt.Equal(true, ok)
