@@ -14,12 +14,24 @@ func (id3 *ID3) GetTitle() (string, bool) {
 	return id3.getString(tagTitle)
 }
 
+func (id3 *ID3) SetTitle(title string) bool {
+	return id3.setString(tagTitle, title)
+}
+
 func (id3 *ID3) GetArtist() (string, bool) {
 	return id3.getString(tagArtist)
 }
 
+func (id3 *ID3) SetArtist(artist string) bool {
+	return id3.setString(tagArtist, artist)
+}
+
 func (id3 *ID3) GetAlbum() (string, bool) {
 	return id3.getString(tagAlbum)
+}
+
+func (id3 *ID3) SetAlbum(album string) bool {
+	return id3.setString(tagAlbum, album)
 }
 
 func (id3 *ID3) GetYear() (int, bool) {
@@ -92,6 +104,15 @@ func (id3 *ID3) getString(name tagName) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func (id3 *ID3) setString(name tagName, data string) bool {
+	// Set UTF-8
+	result := []byte{0}
+	realName := getTagName(name, id3.version)
+	// append data
+	result = append(result, []byte(data)...)
+	return id3.tags.SetTag(realName, result)
 }
 
 func (id3 *ID3) getInt(name tagName) (int, bool) {

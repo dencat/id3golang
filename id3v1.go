@@ -48,6 +48,40 @@ func (id3 *ID3v1) GetTag(key string) ([]byte, bool) {
 	return []byte{}, false
 }
 
+func (id3 *ID3v1) SetTag(key string, data []byte) bool {
+	switch key {
+	case "Type":
+		id3.Type = string(data)
+		return true
+	case "Title":
+		id3.Title = string(data)
+		return true
+	case "Artist":
+		id3.Artist = string(data)
+		return true
+	case "Album":
+		id3.Album = string(data)
+		return true
+	case "Year":
+		year, err := strconv.Atoi(string(data))
+		if err != nil {
+			return false
+		}
+		id3.Year = year
+		return true
+	case "Comment":
+		id3.Comment = string(data)
+		return true
+	case "Genre":
+		if len(data) != 1 {
+			return false
+		}
+		id3.Genre = data[0]
+		return true
+	}
+	return false
+}
+
 func checkId3v1(input io.ReadSeeker) (id3Version, error) {
 	if input == nil {
 		return TypeID3Undefined, errors.New("empty file")

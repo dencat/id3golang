@@ -40,7 +40,7 @@ func readId3Version(input io.ReadSeeker) (id3Version, error) {
 		return versionId3v2, nil
 	}
 
-	// checkid3v1
+	// check id3v1
 	versionId3v1, err := checkId3v1(input)
 	if versionId3v1 != TypeID3Undefined && err == nil {
 		return versionId3v1, nil

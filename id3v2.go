@@ -194,3 +194,8 @@ func (id3 *ID3v2) GetTag(key string) ([]byte, bool) {
 	data, ok := id3.Tags[key]
 	return data, ok
 }
+
+func (id3 *ID3v2) SetTag(key string, data []byte) bool {
+	id3.Tags[key] = data
+	return true
+}
