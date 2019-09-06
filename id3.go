@@ -6,8 +6,12 @@ import (
 )
 
 type ID3 struct {
+	// id3 version
 	version id3Version
+	// Tag information
 	tags    TagReader
+	// All another information
+	data    []byte
 }
 
 func (id3 *ID3) GetTitle() (string, bool) {

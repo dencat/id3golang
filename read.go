@@ -3,6 +3,7 @@ package id3golang
 import (
 	"errors"
 	"io"
+	"io/ioutil"
 	"os"
 )
 
@@ -25,7 +26,13 @@ func Read(input io.ReadSeeker) (*ID3, error) {
 	case TypeID3v1:
 		id3.tags, err = readHeaderID3v1(input)
 	case TypeID3v22, TypeID3v23, TypeID3v24:
+		// read headers
 		id3.tags, err = readHeaderID3v2(input)
+		if err != nil {
+			return &id3, err
+		}
+		// read another data
+		id3.data, err = ioutil.ReadAll(input)
 	default:
 		err = errors.New("Unsupported format")
 	}

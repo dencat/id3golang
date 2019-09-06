@@ -32,4 +32,5 @@ func (v *id3Version) String() string {
 type TagReader interface {
 	GetTag(key string) ([]byte, bool)
 	SetTag(key string, data []byte) bool
+	GetAll() map[string][]byte
 }

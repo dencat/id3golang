@@ -102,7 +102,7 @@ func readHeaderID3v2(input io.ReadSeeker) (*ID3v2, error) {
 	}
 
 	if err != nil {
-		return nil, errors.New("error seek file")
+		return nil, err
 	}
 
 	// Header size
@@ -198,4 +198,8 @@ func (id3 *ID3v2) GetTag(key string) ([]byte, bool) {
 func (id3 *ID3v2) SetTag(key string, data []byte) bool {
 	id3.Tags[key] = data
 	return true
+}
+
+func (id3 *ID3v2) GetAll() map[string][]byte {
+	return id3.Tags
 }
