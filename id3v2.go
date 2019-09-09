@@ -44,7 +44,7 @@ type ID3v2 struct {
 	SubVersion int
 	Flags      Id3v2Flags
 	Length     int
-	Tags       map[string][]byte
+	Tags       []ID3Tag
 }
 
 func (id3v2 *ID3v2) String() string {
@@ -54,8 +54,8 @@ func (id3v2 *ID3v2) String() string {
 		"Flags: " + id3v2.Flags.String() + "\n" +
 		"Length: " + strconv.Itoa(id3v2.Length) + "\n"
 
-	for key, frame := range id3v2.Tags {
-		result += key + ": " + string(frame) + "\n"
+	for _, frame := range id3v2.Tags {
+		result += frame.Key + ": " + string(frame.Value) + "\n"
 	}
 
 	return result
@@ -143,12 +143,11 @@ func readHeaderID3v2(input io.ReadSeeker) (*ID3v2, error) {
 	header.Flags = Id3v2Flags(headerByte[5])
 
 	// Length
-	lengthByte := headerByte[6:10]
-	length := int(lengthByte[3]) | int(lengthByte[2])<<7 | int(lengthByte[1])<<14 | int(lengthByte[0])<<21
+	length := ByteToIntSynchsafe(headerByte[6:10])
 	header.Length = length
 
 	// Extended headers
-	header.Tags = map[string][]byte{}
+	header.Tags = []ID3Tag{}
 	curRead := 0
 	for curRead < length {
 		bytesExtendedHeader := make([]byte, 10)
@@ -167,7 +166,7 @@ func readHeaderID3v2(input io.ReadSeeker) (*ID3v2, error) {
 		//}
 
 		// Frame data size
-		size := int(bytesExtendedHeader[7]) | int(bytesExtendedHeader[6])<<8 | int(bytesExtendedHeader[5])<<16 | int(bytesExtendedHeader[4])<<24
+		size := ByteToInt(bytesExtendedHeader[4:8])
 
 		bytesExtendedValue := make([]byte, size)
 		nReaded, err = input.Read(bytesExtendedValue)
@@ -178,28 +177,59 @@ func readHeaderID3v2(input io.ReadSeeker) (*ID3v2, error) {
 			return nil, errors.New("error extended value length")
 		}
 
-		header.Tags[key] = bytesExtendedValue
+		header.Tags = append(header.Tags, ID3Tag{
+			key,
+			bytesExtendedValue,
+		})
 
 		curRead += 10 + size
 	}
 
 	// TODO
-	//if curRead != length {
-	//	return nil, errors.New("error extended frames")
-	//}
+	if curRead != length {
+		return nil, errors.New("error extended frames")
+	}
 	return &header, nil
 }
 
 func (id3 *ID3v2) GetTag(key string) ([]byte, bool) {
-	data, ok := id3.Tags[key]
-	return data, ok
+	i := id3.findElement(key)
+	if i == -1 {
+		return []byte{}, false
+	}
+	data := id3.Tags[i]
+	return data.Value, true
 }
 
 func (id3 *ID3v2) SetTag(key string, data []byte) bool {
-	id3.Tags[key] = data
+	i := id3.findElement(key)
+	if i == -2 || i == -1 {
+		id3.Tags = append(id3.Tags, ID3Tag{
+			key,
+			data,
+		})
+	} else {
+		id3.Tags[i].Value = data
+	}
 	return true
 }
 
-func (id3 *ID3v2) GetAll() map[string][]byte {
+func (id3 *ID3v2) GetAll() []ID3Tag {
 	return id3.Tags
+}
+
+// Return index if find element
+// Return -1 if not found
+// Return -2 if key == ""
+func (id3 *ID3v2) findElement(key string) int {
+	if key == "" {
+		return -2
+	}
+
+	for i, val := range id3.Tags {
+		if val.Key == key {
+			return i
+		}
+	}
+	return -1
 }

@@ -100,3 +100,31 @@ func DecodeUTF16BE(b []byte) (string, error) {
 
 	return ret.String(), nil
 }
+
+// Convert byte to int
+// In some parts of the tag it is inconvenient to use the
+// unsychronisation scheme because the size of unsynchronised data is
+// not known in advance, which is particularly problematic with size
+// descriptors. The solution in ID3v2 is to use synchsafe integers, in
+// which there can never be any false synchs. Synchsafe integers are
+// integers that keep its highest bit (bit 7) zeroed, making seven bits
+//out of eight available. Thus a 32 bit synchsafe integer can store 28
+// bits of information.
+func ByteToIntSynchsafe(data []byte) int {
+	return int(data[3]) | int(data[2])<<7 | int(data[1])<<14 | int(data[0])<<21
+}
+
+func IntToByteSynchsafe(data int) []byte {
+	// 7F = 0111 1111
+	return []byte{
+		byte(data>>23) & 0x7F,
+		byte(data>>15) & 0x7F,
+		byte(data>>7) & 0x7F,
+		byte(data) & 0x7F,
+	}
+}
+
+// Convert byte to int
+func ByteToInt(data []byte) int {
+	return int(data[3]) | int(data[2])<<8 | int(data[1])<<16 | int(data[0])<<24
+}

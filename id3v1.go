@@ -82,19 +82,19 @@ func (id3 *ID3v1) SetTag(key string, data []byte) bool {
 	return false
 }
 
-func (id3 *ID3v1) getTagData(key string) []byte{
+func (id3 *ID3v1) getTagData(key string) []byte {
 	data, _ := id3.GetTag(key)
 	return data
 }
 
-func (id3 *ID3v1) GetAll() map[string][]byte {
-	return map[string][]byte{
-		"Type": id3.getTagData("Type"),
-		"Title": id3.getTagData("Title"),
-		"Artist": id3.getTagData("Artist"),
-		"Album": id3.getTagData("Album"),
-		"Comment": id3.getTagData("Comment"),
-		"Genre": id3.getTagData("Genre"),
+func (id3 *ID3v1) GetAll() []ID3Tag {
+	return []ID3Tag{
+		{"Type", id3.getTagData("Type")},
+		{"Title", id3.getTagData("Title")},
+		{"Artist", id3.getTagData("Artist")},
+		{"Album", id3.getTagData("Album")},
+		{"Comment", id3.getTagData("Comment")},
+		{"Genre", id3.getTagData("Genre")},
 	}
 }
 

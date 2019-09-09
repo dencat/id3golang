@@ -9,9 +9,9 @@ type ID3 struct {
 	// id3 version
 	version id3Version
 	// Tag information
-	tags    TagReader
+	tags TagReader
 	// All another information
-	data    []byte
+	data []byte
 }
 
 func (id3 *ID3) GetTitle() (string, bool) {
@@ -56,17 +56,17 @@ func (id3 *ID3) GetComment() (*Comment, bool) {
 	if !ok {
 		return nil, false
 	}
-	// Comment struct must be greater than 7
+	// Comment struct must be greater than 4
 	// [lang \x00 text] - comment format
 	// lang - 3 symbols
 	// \x00 - const, delimeter
 	// text - all after
-	if len(commentStr) < 8 {
+	if len(commentStr) < 4 {
 		return nil, false
 	}
 	return &Comment{
 		Language: commentStr[0:3],
-		Text:     commentStr[7:],
+		Text:     commentStr[4:],
 	}, true
 }
 

@@ -2,39 +2,54 @@ package id3golang
 
 import (
 	"errors"
+	"io"
 	"os"
 )
 
-func Save(id3 *ID3, path string) error {
+func SaveFile(id3 *ID3, path string) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
+	defer file.Close()
+
+	return Save(id3, file)
+}
+
+func Save(id3 *ID3, writer io.Writer) error {
+	var err error
+
 	switch id3.version {
 	case TypeID3v1:
 
 	case TypeID3v22, TypeID3v23, TypeID3v24:
 		// write header
-		err = writeHeaderId3v2(id3, file)
+		err = writeHeaderId3v2(id3, writer)
 		if err != nil {
 			return err
 		}
 
 		// write tags
-		for key, value := range id3.tags.GetAll() {
-			err = writeTagHeader(key, value, file)
+		for _, tag := range id3.tags.GetAll() {
+			err = writeTagHeader(tag.Key, tag.Value, writer)
 			if err != nil {
 				return err
 			}
+		}
+
+		// write data
+		_, err = writer.Write(id3.data)
+		if err != nil {
+			return err
 		}
 	default:
 		err = errors.New("Unsupported format")
 	}
 
-	return err
+	return nil
 }
 
-func writeHeaderId3v2(id3 *ID3, file *os.File) error {
+func writeHeaderId3v2(id3 *ID3, writer io.Writer) error {
 	headerByte := make([]byte, 10)
 
 	// ID3
@@ -62,12 +77,13 @@ func writeHeaderId3v2(id3 *ID3, file *os.File) error {
 
 	// Length
 	length := getLength(id3)
-	headerByte[6] = byte(length >> 24)
-	headerByte[7] = byte(length >> 16)
-	headerByte[8] = byte(length >> 8)
-	headerByte[9] = byte(length)
+	lengthByte := IntToByteSynchsafe(length)
+	headerByte[6] = lengthByte[0]
+	headerByte[7] = lengthByte[1]
+	headerByte[8] = lengthByte[2]
+	headerByte[9] = lengthByte[3]
 
-	nWriten, err := file.Write(headerByte)
+	nWriten, err := writer.Write(headerByte)
 	if err != nil {
 		return err
 	}
@@ -78,14 +94,40 @@ func writeHeaderId3v2(id3 *ID3, file *os.File) error {
 }
 
 func getLength(id3 *ID3) int {
-	result := 10
-	for _, value := range id3.tags.GetAll() {
+	result := 0
+	for _, tag := range id3.tags.GetAll() {
 		// 10 - size of tag header
-		result += 10 + len(value)
+		result += 10 + len(tag.Value)
 	}
 	return result
 }
 
-func writeTagHeader(key string, value []byte, file *os.File) error {
+func writeTagHeader(key string, value []byte, writer io.Writer) error {
+	header := make([]byte, 10)
+
+	// Frame id
+	for i, val := range key {
+		header[i] = byte(val)
+	}
+
+	// Frame size
+	length := len(value)
+	header[4] = byte(length >> 24)
+	header[5] = byte(length >> 16)
+	header[6] = byte(length >> 8)
+	header[7] = byte(length)
+
+	// write header
+	_, err := writer.Write(header)
+	if err != nil {
+		return err
+	}
+
+	// write data
+	_, err = writer.Write(value)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

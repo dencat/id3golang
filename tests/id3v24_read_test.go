@@ -1,12 +1,12 @@
 package tests
 
 import (
+	"github.com/dencat/id3golang"
 	"github.com/stretchr/testify/assert"
-	"id3golang"
 	"testing"
 )
 
-func TestId3v24(t *testing.T) {
+func TestReadId3v24(t *testing.T) {
 	asrt := assert.New(t)
 	id3, err := id3golang.ReadFile("tests/meow_id2.4.mp3")
 	asrt.NoError(err, "open")
