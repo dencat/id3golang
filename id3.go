@@ -136,7 +136,7 @@ func (id3 *ID3) getString(name tagName) (string, bool) {
 		case TypeID3v1:
 			return string(data), true
 		case TypeID3v24:
-			result, err := DecodeString(data[1:], textEncoding(data))
+			result, err := DecodeString(data[1:], TextEncoding(data))
 			if err != nil {
 				return "", false
 			}

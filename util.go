@@ -18,7 +18,7 @@ const (
 *	First byte determinate text encoding. If ISO-8859-1 is used this byte should be $00, if Unicode is used it should be $01
 *	Return text encoding. E.g. "utf8", "utf16", etc.
  */
-func textEncoding(b []byte) string {
+func TextEncoding(b []byte) string {
 	if len(b) == 0 {
 		return ""
 	}
