@@ -83,3 +83,12 @@ func GetAllSupportedTags(version Id3Version) []string {
 	}
 	return result
 }
+
+func realTagNameToName(realName string, version Id3Version) tagName {
+	for key, _ := range tagsInfo {
+		info := getTagInfo(key, version)
+		if realName == info.Name {
+			return key
+		}
+	}
+}

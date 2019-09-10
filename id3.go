@@ -22,8 +22,13 @@ func (id3 *ID3) SetVersion(version Id3Version) {
 	id3.version = version
 }
 
-func (id3 *ID3) GetAllTags() []ID3Tag {
-	return id3.tags.GetAll()
+func (id3 *ID3) GetAllTags() []string {
+	result := []string{}
+	allTags := id3.tags.GetAll()
+	for i := range allTags {
+		result = append(result, string(realTagNameToName(allTags[i].Key, id3.version)))
+	}
+	return result
 }
 
 func (id3 *ID3) GetTitle() (string, bool) {
