@@ -31,15 +31,21 @@ func (id3 *ID3) GetAllTagsName() []string {
 	return result
 }
 
+func (id3 *ID3) GetAllTags() []ID3Tag {
+	result := []ID3Tag{}
+	allTags := id3.tags.GetAll()
+	for i := range allTags {
+		key := realTagNameToName(allTags[i].Key, id3.version)
+		result = append(result, ID3Tag{string(key), allTags[i].Value})
+	}
+	return result
+}
+
 func (id3 *ID3) DeleteAllTags() {
 	allTags := id3.tags.GetAll()
 	for i := range allTags {
 		id3.tags.DeleteTag(allTags[i].Key)
 	}
-}
-
-func (id3 *ID3) GetAllTags() []ID3Tag {
-	return id3.tags.GetAll()
 }
 
 func (id3 *ID3) GetTitle() (string, bool) {
