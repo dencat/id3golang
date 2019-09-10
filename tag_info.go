@@ -91,4 +91,5 @@ func realTagNameToName(realName string, version Id3Version) tagName {
 			return key
 		}
 	}
+	return tagName("")
 }
