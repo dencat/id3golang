@@ -7,11 +7,19 @@ import (
 
 type ID3 struct {
 	// id3 version
-	version id3Version
+	version Id3Version
 	// Tag information
 	tags TagReader
 	// All another information
 	data []byte
+}
+
+func (id3 *ID3) GetVersion() Id3Version {
+	return id3.version
+}
+
+func (id3 *ID3) SetVersion(version Id3Version) {
+	id3.version = version
 }
 
 func (id3 *ID3) GetTitle() (string, bool) {

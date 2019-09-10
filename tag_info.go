@@ -43,7 +43,7 @@ var tagsInfo = map[tagName]TagsInfo{
 	tagAlbumArtist: {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, Description: "Band/orchestra/accompaniment"},
 }
 
-func getTagInfo(tagName tagName, version id3Version) *tagInfo {
+func getTagInfo(tagName tagName, version Id3Version) *tagInfo {
 	switch version {
 	case TypeID3v1:
 		return tagsInfo[tagName].ID3v1Tag
@@ -57,7 +57,7 @@ func getTagInfo(tagName tagName, version id3Version) *tagInfo {
 	return nil
 }
 
-func getTagName(name tagName, version id3Version) string {
+func getTagName(name tagName, version Id3Version) string {
 	result := getTagInfo(name, version)
 	if result == nil {
 		return ""
@@ -65,7 +65,7 @@ func getTagName(name tagName, version id3Version) string {
 	return result.Name
 }
 
-func getTagType(name tagName, version id3Version) tagType {
+func getTagType(name tagName, version Id3Version) tagType {
 	result := getTagInfo(name, version)
 	if result == nil {
 		return TAG_TYPE_UNDEFINED
@@ -73,7 +73,7 @@ func getTagType(name tagName, version id3Version) tagType {
 	return result.Type
 }
 
-func GetAllSupportedTags(version id3Version) []string {
+func GetAllSupportedTags(version Id3Version) []string {
 	result := []string{}
 	for key, _ := range tagsInfo {
 		info := getTagInfo(key, version)

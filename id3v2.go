@@ -61,7 +61,7 @@ func (id3v2 *ID3v2) String() string {
 	return result
 }
 
-func checkId3v2(input io.ReadSeeker) (id3Version, error) {
+func checkId3v2(input io.ReadSeeker) (Id3Version, error) {
 	if input == nil {
 		return TypeID3Undefined, errors.New("empty file")
 	}

@@ -98,7 +98,7 @@ func (id3 *ID3v1) GetAll() []ID3Tag {
 	}
 }
 
-func checkId3v1(input io.ReadSeeker) (id3Version, error) {
+func checkId3v1(input io.ReadSeeker) (Id3Version, error) {
 	if input == nil {
 		return TypeID3Undefined, errors.New("empty file")
 	}
