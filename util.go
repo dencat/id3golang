@@ -38,7 +38,7 @@ func textEncoding(b []byte) string {
 	return ""
 }
 
-func decodeString(b []byte, encoding string) (string, error) {
+func DecodeString(b []byte, encoding string) (string, error) {
 	switch encoding {
 	case encodingUTF8:
 		return string(b), nil
