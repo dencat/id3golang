@@ -72,3 +72,14 @@ func getTagType(name tagName, version id3Version) tagType {
 	}
 	return result.Type
 }
+
+func GetAllSupportedTags(version id3Version) []string {
+	result := []string{}
+	for key, _ := range tagsInfo {
+		info := getTagInfo(key, version)
+		if info != nil {
+			result = append(result, string(key))
+		}
+	}
+	return result
+}
