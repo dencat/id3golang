@@ -22,13 +22,24 @@ func (id3 *ID3) SetVersion(version Id3Version) {
 	id3.version = version
 }
 
-func (id3 *ID3) GetAllTags() []string {
+func (id3 *ID3) GetAllTagsName() []string {
 	result := []string{}
 	allTags := id3.tags.GetAll()
 	for i := range allTags {
 		result = append(result, string(realTagNameToName(allTags[i].Key, id3.version)))
 	}
 	return result
+}
+
+func (id3 *ID3) DeleteAllTags() {
+	allTags := id3.tags.GetAll()
+	for i := range allTags {
+		id3.tags.DeleteTag(allTags[i].Key)
+	}
+}
+
+func (id3 *ID3) GetAllTags() []ID3Tag {
+	return id3.tags.GetAll()
 }
 
 func (id3 *ID3) GetTitle() (string, bool) {
@@ -39,6 +50,10 @@ func (id3 *ID3) SetTitle(title string) bool {
 	return id3.setString(tagTitle, title)
 }
 
+func (id3 *ID3) DeleteTitle() {
+	id3.DeleteTag(tagTitle)
+}
+
 func (id3 *ID3) GetArtist() (string, bool) {
 	return id3.getString(tagArtist)
 }
@@ -47,12 +62,20 @@ func (id3 *ID3) SetArtist(artist string) bool {
 	return id3.setString(tagArtist, artist)
 }
 
+func (id3 *ID3) DeleteArtist() {
+	id3.DeleteTag(tagArtist)
+}
+
 func (id3 *ID3) GetAlbum() (string, bool) {
 	return id3.getString(tagAlbum)
 }
 
 func (id3 *ID3) SetAlbum(album string) bool {
 	return id3.setString(tagAlbum, album)
+}
+
+func (id3 *ID3) DeleteAlbum() {
+	id3.DeleteTag(tagAlbum)
 }
 
 func (id3 *ID3) GetYear() (int, bool) {
@@ -181,4 +204,9 @@ func (id3 *ID3) getTimestamp(name tagName) (time.Time, bool) {
 func (id3 *ID3) getData(name tagName) ([]byte, bool) {
 	realTagName := getTagName(name, id3.version)
 	return id3.tags.GetTag(realTagName)
+}
+
+func (id3 *ID3) DeleteTag(name tagName) {
+	realTagName := getTagName(name, id3.version)
+	id3.tags.DeleteTag(realTagName)
 }
