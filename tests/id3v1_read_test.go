@@ -26,8 +26,9 @@ func TestReadId3v1(t *testing.T) {
 	asrt.Equal(true, ok)
 	asrt.Equal("ARTIST123456789012345678901234", artist)
 
-	_, ok = id3.GetYear()
-	asrt.Equal(false, ok)
+	year, ok := id3.GetYear()
+	asrt.Equal(true, ok)
+	asrt.Equal(2001, year)
 
 	_, ok = id3.GetComment()
 	asrt.Equal(true, ok)
