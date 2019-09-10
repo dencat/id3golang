@@ -22,8 +22,8 @@ var id3VersionMap = map[Id3Version]string{
 	TypeID3v24:       "id3v2.4",
 }
 
-func (v *Id3Version) String() string {
-	return id3VersionMap[*v]
+func (v Id3Version) String() string {
+	return id3VersionMap[v]
 }
 
 /*
