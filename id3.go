@@ -117,7 +117,18 @@ func (id3 *ID3) GetComment() (*Comment, bool) {
 }
 
 func (id3 *ID3) GetGenre() (string, bool) {
-	return id3.getString(tagGenre)
+	switch id3.version {
+	case TypeID3v1:
+		data, ok := id3.getData(tagGenre)
+		if !ok {
+			return "", false
+		}
+		genreCode := int(data[0])
+		return genres[genreCode], true
+	default:
+		return id3.getString(tagGenre)
+	}
+
 }
 
 func (id3 *ID3) GetAlbumArtist() (string, bool) {
