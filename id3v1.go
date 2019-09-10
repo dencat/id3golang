@@ -82,6 +82,25 @@ func (id3 *ID3v1) SetTag(key string, data []byte) bool {
 	return false
 }
 
+func (id3 *ID3v1) DeleteTag(key string) {
+	switch key {
+	case "Type":
+		id3.Type = ""
+	case "Title":
+		id3.Title = ""
+	case "Artist":
+		id3.Artist = ""
+	case "Album":
+		id3.Album = ""
+	case "Year":
+		id3.Year = 0
+	case "Comment":
+		id3.Comment = ""
+	case "Genre":
+		id3.Genre = 0
+	}
+}
+
 func (id3 *ID3v1) getTagData(key string) []byte {
 	data, _ := id3.GetTag(key)
 	return data

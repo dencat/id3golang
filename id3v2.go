@@ -214,6 +214,13 @@ func (id3 *ID3v2) SetTag(key string, data []byte) bool {
 	return true
 }
 
+func (id3 *ID3v2) DeleteTag(key string) {
+	i := id3.findElement(key)
+	if i >= 0 {
+		id3.Tags = append(id3.Tags[:i], id3.Tags[i+1:]...)
+	}
+}
+
 func (id3 *ID3v2) GetAll() []ID3Tag {
 	return id3.Tags
 }
