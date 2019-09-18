@@ -16,7 +16,21 @@ go get github.com/dencat/id3golang
 | Year              | Year    |         | TYER    | TDOR    |
 | Comment           | Comment |         | COMM    | COMM    |
 | Genre             | Genre   |         | TCON    | TCON    |
-| Album Artist      | -       |         | TPE2    | TPE2    |        
+| Album Artist      | -       |         | TPE2    | TPE2    | 
+| Date              | -       |         | TYER    | TDRC    |
+| Arranger          | -       |         | IPLS    | TIPL    |
+| Author            | -       |         | TOLY    | TOLY    |
+| BPM               | -       |         | TBPM    | TBPM    |
+| Catalog Number    | -       |         | TXXX    | TXXX    |
+| Compilation       | -       |         | TCMP    | TCMP    |
+| Composer          | -       |         | TCOM    | TCOM    |
+| Conductor         | -       |         | TPE3    | TPE3    |
+| Copyright         | -       |         | TCOP    | TCOP    |
+| Description       | -       |         | TIT2    | TIT2    |
+| Disc Number       | -       |         | TPOS    | TPOS    |
+| Encoded by        | -       |         | TENC    | TENC    |
+| Track Number      | -       |         | TRCK    | TRCK    |  
+       
 
 # How to use
 
