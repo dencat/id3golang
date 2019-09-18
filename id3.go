@@ -85,11 +85,17 @@ func (id3 *ID3) DeleteAlbum() {
 }
 
 func (id3 *ID3) GetYear() (int, bool) {
-	year, ok := id3.getTimestamp(tagYear)
-	if !ok {
-		return 0, false
+	switch id3.version {
+	case TypeID3v1:
+		return id3.getInt(tagYear)
+	default:
+		year, ok := id3.getTimestamp(tagYear)
+		if !ok {
+			return 0, false
+		}
+		return year.Year(), true
 	}
-	return year.Year(), true
+
 }
 
 type Comment struct {
@@ -117,7 +123,18 @@ func (id3 *ID3) GetComment() (*Comment, bool) {
 }
 
 func (id3 *ID3) GetGenre() (string, bool) {
-	return id3.getString(tagGenre)
+	switch id3.version {
+	case TypeID3v1:
+		data, ok := id3.getData(tagGenre)
+		if !ok {
+			return "", false
+		}
+		genreCode := int(data[0])
+		return genres[genreCode], true
+	default:
+		return id3.getString(tagGenre)
+	}
+
 }
 
 func (id3 *ID3) GetAlbumArtist() (string, bool) {

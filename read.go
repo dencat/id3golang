@@ -57,8 +57,8 @@ func readId3Version(input io.ReadSeeker) (Id3Version, error) {
 }
 
 func seekAndRead(input io.ReadSeeker, offset int64, whence int, read int) ([]byte, error) {
-	startIndex, err := input.Seek(offset, whence)
-	if startIndex != 0 || err != nil {
+	_, err := input.Seek(offset, whence)
+	if err != nil {
 		return nil, errors.New("error seek file")
 	}
 
@@ -67,7 +67,7 @@ func seekAndRead(input io.ReadSeeker, offset int64, whence int, read int) ([]byt
 	if err != nil {
 		return nil, err
 	}
-	if nReaded != 4 {
+	if nReaded != read {
 		return nil, errors.New("error header length")
 	}
 
