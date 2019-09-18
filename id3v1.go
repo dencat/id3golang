@@ -9,23 +9,29 @@ import (
 // fix size - 128 bytes
 type ID3v1 struct {
 	Type     string // Always 'TAG'
-	Title    string // length 30
-	Artist   string // length 30
-	Album    string // length 30
-	Year     int
-	Comment  string
-	ZeroByte byte
-	Track    byte
-	Genre    byte
+	Title    string // length 30. 30 characters of the title
+	Artist   string // length 30. 30 characters of the artist name
+	Album    string // length 30. 	30 characters of the album name
+	Year     int    // length 4. A four-digit year.
+	Comment  string // length 28 or 30. The comment.
+	ZeroByte byte   // length 1. If a track number is stored, this byte contains a binary 0.
+	Track    byte   // length 1. The number of the track on the album, or 0. Invalid, if previous byte is not a binary 0.
+	Genre    byte   // length 1. Index in a list of genres, or 255
 }
 
 func (id3v1 *ID3v1) String() string {
+	var trackNumber string
+	if id3v1.ZeroByte == 0 {
+		trackNumber = "TrackNumber: " + strconv.Itoa(int(id3v1.Track)) + "\n"
+	}
+
 	return "Type: " + id3v1.Type + "\n" +
 		"Title: " + id3v1.Title + "\n" +
 		"Artist: " + id3v1.Artist + "\n" +
 		"Album: " + id3v1.Album + "\n" +
 		"Year: " + strconv.Itoa(id3v1.Year) + "\n" +
-		"Comment: " + id3v1.Comment + "\n"
+		"Comment: " + id3v1.Comment + "\n" +
+		trackNumber
 }
 
 func (id3 *ID3v1) GetTag(key string) ([]byte, bool) {
@@ -44,6 +50,11 @@ func (id3 *ID3v1) GetTag(key string) ([]byte, bool) {
 		return []byte(id3.Comment), true
 	case "Genre":
 		return []byte{id3.Genre}, true
+	case "TrackNumber":
+		if id3.ZeroByte == 0 {
+			// like a year
+			return []byte(strconv.Itoa(int(id3.Track))), true
+		}
 	}
 	return []byte{}, false
 }
@@ -78,6 +89,14 @@ func (id3 *ID3v1) SetTag(key string, data []byte) bool {
 		}
 		id3.Genre = data[0]
 		return true
+	case "TrackNumber":
+		id3.ZeroByte = 0
+		trackNumber, err := strconv.Atoi(string(data))
+		if err != nil {
+			return false
+		}
+		id3.Track = byte(trackNumber)
+		return true
 	}
 	return false
 }
@@ -98,6 +117,9 @@ func (id3 *ID3v1) DeleteTag(key string) {
 		id3.Comment = ""
 	case "Genre":
 		id3.Genre = 0
+	case "TrackNumber":
+		id3.ZeroByte = 1
+		id3.Track = 0
 	}
 }
 
@@ -179,9 +201,19 @@ func readHeaderID3v1(input io.ReadSeeker) (*ID3v1, error) {
 	}
 
 	// Comment
-	header.Comment = string(headerByte[97:127])
+	// The track number is stored in the last two bytes of the comment field. If the comment is 29 or 30 characters long, no track number can be stored
+	if headerByte[125] == 0 {
+		header.Comment = string(headerByte[97:125])
+		header.ZeroByte = 0
+		header.Track = headerByte[126]
+	} else {
+		header.Comment = string(headerByte[97:127])
+		header.ZeroByte = headerByte[125]
+		header.Track = 0
+	}
 
 	// Genre
+	// Index in a list of genres, or 255
 	header.Genre = headerByte[127]
 
 	return &header, nil

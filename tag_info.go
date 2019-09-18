@@ -55,7 +55,7 @@ var tagsInfo = map[tagName]TagsInfo{
 	tagGenre:         {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Genre"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCON"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCON"}, Description: "Content type"},
 	tagAlbumArtist:   {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, Description: "Band/orchestra/accompaniment"},
 	tagDate:          {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TYER"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TDRC"}, Description: "Recording time"},
-	tagTrackNumber:   {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, Description: "Track number/Position in set"},
+	tagTrackNumber:   {ID3v1Tag: &tagInfo{Type: TAG_TYPE_INT, Name: "TrackNumber"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, Description: "Track number/Position in set"},
 	tagArranger:      {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "IPLS"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIPL"}, Description: "Involved people list"},
 	tagAuthor:        {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOLY"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOLY"}, Description: "Original lyricist(s)/text writer(s)"},
 	tagBPM:           {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TBPM"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TBPM"}, Description: "BPM (beats per minute)"},

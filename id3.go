@@ -104,22 +104,33 @@ type Comment struct {
 }
 
 func (id3 *ID3) GetComment() (*Comment, bool) {
+	var comment Comment
+
 	commentStr, ok := id3.getString(tagComment)
 	if !ok {
 		return nil, false
 	}
-	// Comment struct must be greater than 4
-	// [lang \x00 text] - comment format
-	// lang - 3 symbols
-	// \x00 - const, delimeter
-	// text - all after
-	if len(commentStr) < 4 {
-		return nil, false
+
+	switch id3.version {
+	case TypeID3v1:
+		comment.Language = ""
+		comment.Text = commentStr
+	default:
+		// id3v2
+		// Comment struct must be greater than 4
+		// [lang \x00 text] - comment format
+		// lang - 3 symbols
+		// \x00 - const, delimeter
+		// text - all after
+		if len(commentStr) < 4 {
+			return nil, false
+		}
+
+		comment.Language = commentStr[0:3]
+		comment.Text = commentStr[4:]
 	}
-	return &Comment{
-		Language: commentStr[0:3],
-		Text:     commentStr[4:],
-	}, true
+
+	return &comment, true
 }
 
 func (id3 *ID3) GetGenre() (string, bool) {
@@ -129,8 +140,15 @@ func (id3 *ID3) GetGenre() (string, bool) {
 		if !ok {
 			return "", false
 		}
+
 		genreCode := int(data[0])
-		return genres[genreCode], true
+		genre, ok := genres[genreCode]
+
+		if genreCode == 255 || !ok {
+			return "", false
+		}
+
+		return genre, true
 	default:
 		return id3.getString(tagGenre)
 	}
@@ -141,24 +159,32 @@ func (id3 *ID3) GetAlbumArtist() (string, bool) {
 	return id3.getString(tagAlbumArtist)
 }
 
-func (id3 *ID3) GetDate() (string, bool) {
-	return id3.getString(tagDate)
+func (id3 *ID3) SetAlbumArtist(albumArtist string) bool {
+	return id3.setString(tagAlbumArtist, albumArtist)
 }
 
-func (id3 *ID3) SetDate(title string) bool {
-	return id3.setString(tagDate, title)
+func (id3 *ID3) DeleteAlbumArtist() {
+	id3.DeleteTag(tagAlbumArtist)
+}
+
+func (id3 *ID3) GetDate() (time.Time, bool) {
+	return id3.getTimestamp(tagDate)
+}
+
+func (id3 *ID3) SetDate(date string) bool {
+	return id3.setString(tagDate, date)
 }
 
 func (id3 *ID3) DeleteDate() {
 	id3.DeleteTag(tagDate)
 }
 
-func (id3 *ID3) GetTrackNumber() (string, bool) {
-	return id3.getString(tagTrackNumber)
+func (id3 *ID3) GetTrackNumber() (int, bool) {
+	return id3.getInt(tagTrackNumber)
 }
 
-func (id3 *ID3) SetTrackNumber(title string) bool {
-	return id3.setString(tagTrackNumber, title)
+func (id3 *ID3) SetTrackNumber(trackNumber int) bool {
+	return id3.setString(tagTrackNumber, strconv.Itoa(trackNumber))
 }
 
 func (id3 *ID3) DeleteTrackNumber() {
@@ -169,8 +195,8 @@ func (id3 *ID3) GetArranger() (string, bool) {
 	return id3.getString(tagArranger)
 }
 
-func (id3 *ID3) SetArranger(title string) bool {
-	return id3.setString(tagArranger, title)
+func (id3 *ID3) SetArranger(arranger string) bool {
+	return id3.setString(tagArranger, arranger)
 }
 
 func (id3 *ID3) DeleteArranger() {
@@ -181,20 +207,20 @@ func (id3 *ID3) GetAuthor() (string, bool) {
 	return id3.getString(tagAuthor)
 }
 
-func (id3 *ID3) SetAuthor(title string) bool {
-	return id3.setString(tagAuthor, title)
+func (id3 *ID3) SetAuthor(author string) bool {
+	return id3.setString(tagAuthor, author)
 }
 
 func (id3 *ID3) DeleteAuthor() {
 	id3.DeleteTag(tagAuthor)
 }
 
-func (id3 *ID3) GetBPM() (string, bool) {
-	return id3.getString(tagBPM)
+func (id3 *ID3) GetBPM() (int, bool) {
+	return id3.getInt(tagBPM)
 }
 
-func (id3 *ID3) SetBPM(title string) bool {
-	return id3.setString(tagBPM, title)
+func (id3 *ID3) SetBPM(bpm int) bool {
+	return id3.setString(tagBPM, strconv.Itoa(bpm))
 }
 
 func (id3 *ID3) DeleteBPM() {
@@ -205,8 +231,8 @@ func (id3 *ID3) GetCatalogNumber() (string, bool) {
 	return id3.getString(tagCatalogNumber)
 }
 
-func (id3 *ID3) SetCatalogNumber(title string) bool {
-	return id3.setString(tagCatalogNumber, title)
+func (id3 *ID3) SetCatalogNumber(catalogNumber string) bool {
+	return id3.setString(tagCatalogNumber, catalogNumber)
 }
 
 func (id3 *ID3) DeleteCatalogNumber() {
@@ -217,8 +243,8 @@ func (id3 *ID3) GetCompilation() (string, bool) {
 	return id3.getString(tagCompilation)
 }
 
-func (id3 *ID3) SetCompilation(title string) bool {
-	return id3.setString(tagCompilation, title)
+func (id3 *ID3) SetCompilation(compilation string) bool {
+	return id3.setString(tagCompilation, compilation)
 }
 
 func (id3 *ID3) DeleteCompilation() {
@@ -229,8 +255,8 @@ func (id3 *ID3) GetComposer() (string, bool) {
 	return id3.getString(tagComposer)
 }
 
-func (id3 *ID3) SetComposer(title string) bool {
-	return id3.setString(tagComposer, title)
+func (id3 *ID3) SetComposer(composer string) bool {
+	return id3.setString(tagComposer, composer)
 }
 
 func (id3 *ID3) DeleteComposer() {
@@ -241,8 +267,8 @@ func (id3 *ID3) GetConductor() (string, bool) {
 	return id3.getString(tagConductor)
 }
 
-func (id3 *ID3) SetConductor(title string) bool {
-	return id3.setString(tagConductor, title)
+func (id3 *ID3) SetConductor(conductor string) bool {
+	return id3.setString(tagConductor, conductor)
 }
 
 func (id3 *ID3) DeleteConductor() {
@@ -253,8 +279,8 @@ func (id3 *ID3) GetCopyright() (string, bool) {
 	return id3.getString(tagCopyright)
 }
 
-func (id3 *ID3) SetCopyright(title string) bool {
-	return id3.setString(tagCopyright, title)
+func (id3 *ID3) SetCopyright(copyright string) bool {
+	return id3.setString(tagCopyright, copyright)
 }
 
 func (id3 *ID3) DeleteCopyright() {
@@ -265,8 +291,8 @@ func (id3 *ID3) GetDescription() (string, bool) {
 	return id3.getString(tagDescription)
 }
 
-func (id3 *ID3) SetDescription(title string) bool {
-	return id3.setString(tagDescription, title)
+func (id3 *ID3) SetDescription(description string) bool {
+	return id3.setString(tagDescription, description)
 }
 
 func (id3 *ID3) DeleteDescription() {
@@ -277,8 +303,8 @@ func (id3 *ID3) GetDiscNumber() (string, bool) {
 	return id3.getString(tagDiscNumber)
 }
 
-func (id3 *ID3) SetDiscNumber(title string) bool {
-	return id3.setString(tagDiscNumber, title)
+func (id3 *ID3) SetDiscNumber(discNumber string) bool {
+	return id3.setString(tagDiscNumber, discNumber)
 }
 
 func (id3 *ID3) DeleteDiscNumber() {
@@ -289,8 +315,8 @@ func (id3 *ID3) GetEncodedBy() (string, bool) {
 	return id3.getString(tagEncodedBy)
 }
 
-func (id3 *ID3) SetEncodedBy(title string) bool {
-	return id3.setString(tagEncodedBy, title)
+func (id3 *ID3) SetEncodedBy(encodedBy string) bool {
+	return id3.setString(tagEncodedBy, encodedBy)
 }
 
 func (id3 *ID3) DeleteEncodedBy() {

@@ -126,5 +126,10 @@ func IntToByteSynchsafe(data int) []byte {
 
 // Convert byte to int
 func ByteToInt(data []byte) int {
-	return int(data[3]) | int(data[2])<<8 | int(data[1])<<16 | int(data[0])<<24
+	result := 0
+	for i := len(data) - 1; i >= 0; i-- {
+		count := byte(len(data) - i - 1)
+		result |= int(data[i]) << (byte(count) * 8)
+	}
+	return result
 }

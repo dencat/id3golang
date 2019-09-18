@@ -30,13 +30,15 @@ func TestReadId3v1(t *testing.T) {
 	asrt.Equal(true, ok)
 	asrt.Equal(2001, year)
 
-	_, ok = id3.GetComment()
+	comment, ok := id3.GetComment()
 	asrt.Equal(true, ok)
-	// TODO
-	//asrt.Equal("COMMENT12345678901234567890123", comment.Text)
+	asrt.Equal("COMMENT123456789012345678901", comment.Text)
 
 	genre, ok := id3.GetGenre()
 	asrt.Equal(true, ok)
 	asrt.Equal("Pop", genre)
 
+	trackNumber, ok := id3.GetTrackNumber()
+	asrt.Equal(true, ok)
+	asrt.Equal(1, trackNumber)
 }
