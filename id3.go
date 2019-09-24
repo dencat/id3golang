@@ -1,7 +1,10 @@
 package id3golang
 
 import (
+	"bytes"
+	"image"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -323,6 +326,122 @@ func (id3 *ID3) DeleteEncodedBy() {
 	id3.DeleteTag(tagEncodedBy)
 }
 
+type Picture struct {
+	Mime        string
+	Description string
+	PictureType PictureType
+	Image       image.Image
+}
+
+type PictureType int
+
+const (
+	PictureTypeOther              PictureType = 0
+	PictureType32x32FileIcon      PictureType = 1
+	PictureTypeOtherFileIcon      PictureType = 2
+	PictureTypeCoverFront         PictureType = 3
+	PictureTypeCoverBack          PictureType = 4
+	PictureTypeLeafletPage        PictureType = 5
+	PictureTypeMedia              PictureType = 6
+	PictureTypeLeadArtist         PictureType = 7
+	PictureTypeArtist             PictureType = 8
+	PictureTypeConductor          PictureType = 9
+	PictureTypeBand               PictureType = 10
+	PictureTypeComposer           PictureType = 11
+	PictureTypeLyricist           PictureType = 12
+	PictureTypeRecordingLocation  PictureType = 13
+	PictureTypeDuringRecording    PictureType = 14
+	PictureTypeDuringPerformance  PictureType = 15
+	PictureTypeScreenCapture      PictureType = 16
+	PictureTypeBrightColouredFish PictureType = 17
+	PictureTypeIllustration       PictureType = 18
+	PictureTypeBandLogotype       PictureType = 19
+	PictureTypePublisherLogotype  PictureType = 20
+)
+
+func (p *PictureType) String() string {
+	switch *p {
+	case PictureTypeOther:
+		return "Other"
+	case PictureType32x32FileIcon:
+		return "32x32 pixels 'file icon' (PNG only)"
+	case PictureTypeOtherFileIcon:
+		return "Other file icon"
+	case PictureTypeCoverFront:
+		return "Cover (front)"
+	case PictureTypeCoverBack:
+		return "Cover (back)"
+	case PictureTypeLeafletPage:
+		return "Leaflet page"
+	case PictureTypeMedia:
+		return "Media (e.g. lable side of CD)"
+	case PictureTypeLeadArtist:
+		return "Lead artist/lead performer/soloist"
+	case PictureTypeArtist:
+		return "Artist/performer"
+	case PictureTypeConductor:
+		return "Conductor"
+	case PictureTypeBand:
+		return "Band/Orchestra"
+	case PictureTypeComposer:
+		return "Composer"
+	case PictureTypeLyricist:
+		return "Lyricist/text writer"
+	case PictureTypeRecordingLocation:
+		return "Recording Location"
+	case PictureTypeDuringRecording:
+		return "During recording"
+	case PictureTypeDuringPerformance:
+		return "During performance"
+	case PictureTypeScreenCapture:
+		return "Movie/video screen capture"
+	case PictureTypeBrightColouredFish:
+		return "A bright coloured fish"
+	case PictureTypeIllustration:
+		return "Illustration"
+	case PictureTypeBandLogotype:
+		return "Band/artist logotype"
+	case PictureTypePublisherLogotype:
+		return "Publisher/Studio logotype"
+	}
+	return ""
+}
+
+func (id3 *ID3) GetPicture() (*Picture, bool) {
+	var picture Picture
+	str, ok := id3.getString(tagPicture)
+	if !ok {
+		return nil, false
+	}
+
+	data := strings.SplitN(str, "\x00", 3)
+	if len(data) != 3 {
+		return nil, false
+	}
+
+	// Mime
+	picture.Mime = data[0]
+	if len(data[1]) == 0 {
+		return nil, false
+	}
+
+	picture.PictureType = PictureType(data[1][0])
+	picture.Description = data[1][1:]
+
+	switch picture.Mime {
+	case "image/jpeg", "image/png":
+		img, _, err := image.Decode(bytes.NewReader([]byte(data[2])))
+		if err != nil {
+			return nil, false
+		}
+		picture.Image = img
+	default:
+		return nil, false
+	}
+
+	return &picture, true
+}
+
 func (id3 *ID3) getString(name tagName) (string, bool) {
 	data, ok := id3.getData(name)
 	if !ok {
@@ -334,7 +453,7 @@ func (id3 *ID3) getString(name tagName) (string, bool) {
 		switch id3.version {
 		case TypeID3v1:
 			return string(data), true
-		case TypeID3v24:
+		case TypeID3v22, TypeID3v23, TypeID3v24:
 			result, err := DecodeString(data[1:], TextEncoding(data))
 			if err != nil {
 				return "", false

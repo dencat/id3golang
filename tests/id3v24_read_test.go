@@ -95,4 +95,10 @@ func TestReadId3v24(t *testing.T) {
 	trackNumber, ok := id3.GetTrackNumber()
 	asrt.Equal(true, ok)
 	asrt.Equal(12, trackNumber)
+
+	/*picture, ok := id3.GetPicture()
+	if asrt.True(ok) {
+		asrt.Equal("image/jpeg", picture.Mime)
+		asrt.Equal("mew mew", picture.Description)
+	}*/
 }

@@ -80,7 +80,7 @@ func checkId3v2(input io.ReadSeeker) (Id3Version, error) {
 		case 2:
 			return TypeID3v22, nil
 		case 3:
-			return TypeID3v22, nil
+			return TypeID3v23, nil
 		case 4:
 			return TypeID3v24, nil
 		}
@@ -161,9 +161,9 @@ func readHeaderID3v2(input io.ReadSeeker) (*ID3v2, error) {
 		// Frame identifier
 		key := string(bytesExtendedHeader[0:4])
 
-		//if bytesExtendedHeader[0] == 0 && bytesExtendedHeader[1] == 0 && bytesExtendedHeader[2] == 0 {
-		//	break
-		//}
+		/*if bytesExtendedHeader[0] == 0 && bytesExtendedHeader[1] == 0 && bytesExtendedHeader[2] == 0 && bytesExtendedHeader[3] == 0 {
+			break
+		}*/
 
 		// Frame data size
 		size := ByteToInt(bytesExtendedHeader[4:8])
@@ -194,7 +194,7 @@ func readHeaderID3v2(input io.ReadSeeker) (*ID3v2, error) {
 
 func (id3 *ID3v2) GetTag(key string) ([]byte, bool) {
 	i := id3.findElement(key)
-	if i == -1 {
+	if i == -1 || i == -2 {
 		return []byte{}, false
 	}
 	data := id3.Tags[i]

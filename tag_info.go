@@ -31,6 +31,7 @@ const (
 	tagDescription   tagName = "Description"
 	tagDiscNumber    tagName = "DiscNumber"
 	tagEncodedBy     tagName = "EncodedBy"
+	tagPicture       tagName = "Picture"
 )
 
 type tagInfo struct {
@@ -47,26 +48,27 @@ type TagsInfo struct {
 }
 
 var tagsInfo = map[tagName]TagsInfo{
-	tagTitle:         {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Title"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT2"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT2"}, Description: "Title/songname/content description"},
-	tagArtist:        {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Artist"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE1"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE1"}, Description: "Lead performer(s)/Soloist(s)"},
-	tagAlbum:         {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Album"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TALB"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TALB"}, Description: "Album/Movie/Show title"},
-	tagYear:          {ID3v1Tag: &tagInfo{Type: TAG_TYPE_INT, Name: "Year"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TYER"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TDOR"}, Description: "Year"},
-	tagComment:       {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Comment"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "COMM"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "COMM"}, Description: "Comments"},
+	tagTitle:         {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Title"}, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TT2"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT2"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT2"}, Description: "Title/songname/content description"},
+	tagArtist:        {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Artist"}, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TP1"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE1"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE1"}, Description: "Lead performer(s)/Soloist(s)"},
+	tagAlbum:         {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Album"}, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOT"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TALB"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TALB"}, Description: "Album/Movie/Show title"},
+	tagYear:          {ID3v1Tag: &tagInfo{Type: TAG_TYPE_INT, Name: "Year"}, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TYE"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TYER"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TDOR"}, Description: "Year"},
+	tagComment:       {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Comment"}, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "COM"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "COMM"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "COMM"}, Description: "Comments"},
 	tagGenre:         {ID3v1Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "Genre"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCON"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCON"}, Description: "Content type"},
-	tagAlbumArtist:   {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, Description: "Band/orchestra/accompaniment"},
-	tagDate:          {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TYER"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TDRC"}, Description: "Recording time"},
-	tagTrackNumber:   {ID3v1Tag: &tagInfo{Type: TAG_TYPE_INT, Name: "TrackNumber"}, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, Description: "Track number/Position in set"},
+	tagTrackNumber:   {ID3v1Tag: &tagInfo{Type: TAG_TYPE_INT, Name: "TrackNumber"}, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRK"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TRCK"}, Description: "Track number/Position in set"},
+	tagAlbumArtist:   {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOA"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE2"}, Description: "Band/orchestra/accompaniment"},
+	tagDate:          {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIM"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TYER"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TDRC"}, Description: "Recording time"},
 	tagArranger:      {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "IPLS"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIPL"}, Description: "Involved people list"},
-	tagAuthor:        {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOLY"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOLY"}, Description: "Original lyricist(s)/text writer(s)"},
-	tagBPM:           {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TBPM"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TBPM"}, Description: "BPM (beats per minute)"},
+	tagAuthor:        {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOL"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOLY"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TOLY"}, Description: "Original lyricist(s)/text writer(s)"},
+	tagBPM:           {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TBP"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TBPM"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TBPM"}, Description: "BPM (beats per minute)"},
 	tagCatalogNumber: {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TXXX"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TXXX"}, Description: "Catalog number"},
 	tagCompilation:   {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCMP"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCMP"}, Description: "iTunes Compilation Flag"},
-	tagComposer:      {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOM"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOM"}, Description: "Composer"},
-	tagConductor:     {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE3"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE3"}, Description: "Conductor/performer refinement"},
-	tagCopyright:     {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOP"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOP"}, Description: "Copyright message"},
-	tagDescription:   {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT3"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT3"}, Description: "Subtitle/Description refinement"},
+	tagComposer:      {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCM"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOM"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOM"}, Description: "Composer"},
+	tagConductor:     {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TP3"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE3"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPE3"}, Description: "Conductor/performer refinement"},
+	tagCopyright:     {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCR"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOP"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TCOP"}, Description: "Copyright message"},
+	tagDescription:   {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TXX"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT3"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TIT3"}, Description: "Subtitle/Description refinement"},
 	tagDiscNumber:    {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPOS"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TPOS"}, Description: "Part of a set"},
-	tagEncodedBy:     {ID3v1Tag: nil, ID3v22Tag: nil, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TENC"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TENC"}, Description: "Encoded by"},
+	tagEncodedBy:     {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TEN"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TENC"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "TENC"}, Description: "Encoded by"},
+	tagPicture:       {ID3v1Tag: nil, ID3v22Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "PIC"}, ID3v23Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "APIC"}, ID3v24Tag: &tagInfo{Type: TAG_TYPE_TEXT, Name: "APIC"}, Description: "Attached picture"},
 }
 
 func getTagInfo(tagName tagName, version Id3Version) *tagInfo {

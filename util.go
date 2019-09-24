@@ -111,7 +111,12 @@ func DecodeUTF16BE(b []byte) (string, error) {
 //out of eight available. Thus a 32 bit synchsafe integer can store 28
 // bits of information.
 func ByteToIntSynchsafe(data []byte) int {
-	return int(data[3]) | int(data[2])<<7 | int(data[1])<<14 | int(data[0])<<21
+	//return int(data[3]) | int(data[2])<<7 | int(data[1])<<14 | int(data[0])<<21
+	result := 0
+	for _, b := range data {
+		result = (result << 7) | int(b)
+	}
+	return result
 }
 
 func IntToByteSynchsafe(data int) []byte {
@@ -127,9 +132,12 @@ func IntToByteSynchsafe(data int) []byte {
 // Convert byte to int
 func ByteToInt(data []byte) int {
 	result := 0
-	for i := len(data) - 1; i >= 0; i-- {
-		count := byte(len(data) - i - 1)
-		result |= int(data[i]) << (byte(count) * 8)
+	for _, b := range data {
+		result = (result << 8) | int(b)
 	}
+	/*for i := len(data) - 1; i >= 0; i-- {
+		count := byte(len(data) - i - 1)
+		result |= int(data[i]) << (count * 8)
+	}*/
 	return result
 }
